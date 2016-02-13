@@ -1,10 +1,12 @@
 package me.zed.ER;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -23,15 +25,43 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 
 public class EasyReport extends Application {
 
+    ObservableList<String> ranks = FXCollections.observableArrayList("Multiple Ranks/Offenders",
+            "Default",
+            "VIP",
+            "VIP+",
+            "MVP",
+            "MVP+");
+
+    ObservableList<String> perms = FXCollections.observableArrayList("Yes",
+            "No");
+
+    ObservableList<String> rsn = FXCollections.observableArrayList("Hacking",
+            "Teaming",
+            "Inappropriate Content",
+            "Abuse",
+            "Spam");
     Clipboard clipboard = Clipboard.getSystemClipboard();
     ClipboardContent content = new ClipboardContent();
-    Alert alert;
     TextArea textArea;
-    Alert empty;
+    TextInputDialog commentDia;
+
+    Text lname;
+    Text lproof;
+    Text lrank;
+    Text lperm;
+    Text lreason;
+
+    static TextArea name;
+    static TextArea proof;
+
+    static ComboBox reason;
+    static ComboBox rank;
+    static ComboBox sharePerm;
 
     public static void main(String[] args) {
         launch(args);
@@ -52,26 +82,16 @@ public class EasyReport extends Application {
 
         border.setCenter(textArea());
 
-
-        alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Your report has been successfully copied!");
-        alert.setHeaderText("Thanks for using Easy Report!");
-        alert.setTitle("Easy Report Tool V3.0");
-
-        empty = new Alert(Alert.AlertType.WARNING);
-        empty.setTitle("Report Box Error!");
-        empty.setContentText("The Report Box is empty, fill it with a report!");
-        empty.setHeaderText(null);
-
-        Scene scene = new Scene(border, 350 * 2.5, 250 * 2.5);
+        Scene scene = new Scene(border, 360 * 2.5, 250 * 2.5);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
+    //top
     private HBox addHBox() {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(15, 15, 15, 15));
-        hbox.setSpacing(520);
+        hbox.setSpacing(640);
         hbox.setStyle("-fx-background-color: #C0C0C0;");
 
         Text info = new Text("Hypixel Report Tool \r\n Version 3.0");
@@ -84,15 +104,31 @@ public class EasyReport extends Application {
 
         return hbox;
     }
-
+    //bottom
     private HBox addHBoxBtm() {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(15, 15, 15, 15));
-        hbox.setSpacing(140);
+        hbox.setSpacing(160);
         hbox.setStyle("-fx-background-color: #C0C0C0;");
 
         Text credits = new Text("© Professor_Zed | All rights reserved.");
         credits.setFont(Font.font("Sofia-Pro", FontWeight.NORMAL, 12));
+
+        Button commentBtn = new Button("Comment");
+        commentBtn.setPrefSize(140,40);
+        commentBtn.setFont(Font.font("Sant-Serif", FontWeight.BOLD, 14));
+        commentBtn.setAlignment(Pos.CENTER);
+        commentBtn.setOnAction(event -> {
+            commentDia = new TextInputDialog();
+            commentDia.setHeaderText("Comment for the offense");
+            commentDia.setTitle("Comment");
+            commentDia.setContentText("Enter your comment");
+
+            Optional<String> comment = commentDia.showAndWait();
+            if(comment.isPresent()){
+                String commentString = comment.toString();
+            }
+        });
 
         Button btncopy = new Button("Copy Report");
         btncopy.setPrefWidth(140);
@@ -100,27 +136,27 @@ public class EasyReport extends Application {
         btncopy.setFont(Font.font("Sant-Serif", FontWeight.BOLD, 14));
         btncopy.setAlignment(Pos.CENTER);
         btncopy.setOnAction(e -> {
-            alert.show();
-            if (textArea.getText().isEmpty()) {
-                empty.show();
+            textArea.setText(Result.result);
+            if (textArea.getText().isEmpty() || name.getText().isEmpty() || proof.getText().isEmpty()) {
+                Alerts.resultAlert();
             } else {
                 content.putString(textArea.getText());
                 clipboard.setContent(content);
+                Alerts.successfulAlert();
                 //fix this..
             }
         });
-        hbox.getChildren().addAll(credits, btncopy);
+        hbox.getChildren().addAll(credits, btncopy, commentBtn);
 
         return hbox;
     }
 
+    //right
     private VBox buttons() {
         VBox vbox = new VBox();
-        vbox.setPadding(new Insets(15,15,15,85));
-//        vbox.setStyle("-fx-background-color: #000000;");
-        vbox.setSpacing(5);
+        vbox.setPadding(new Insets(15, 15, 15, 120));
+        vbox.setSpacing(7);
 
-        //buttons
         Image logo = new Image(EasyReport.class.getResourceAsStream("smallerlogo.png"));
         Button forum = new Button();
         forum.setGraphic(new ImageView(logo));
@@ -178,21 +214,43 @@ public class EasyReport extends Application {
             }
         });
 
-        vbox.getChildren().addAll(forum, yt,imgr);
+        vbox.getChildren().addAll(forum, yt, imgr);
         return vbox;
     }
 
+    //left
     private VBox rprtinfo2() {
         VBox vbox = new VBox();
-        vbox.setPadding(new Insets(15, 200, 15, 15));
-        vbox.setSpacing(20);
-        //add info
+        vbox.setPadding(new Insets(15, 50, 15, 15));
+        vbox.setSpacing(17);
+
+        lname = new Text("Offender's Name");
+        name = new TextArea();
+        name.setPrefSize(15, 25);
+
+        lrank = new Text("Offender's Rank");
+        rank = new ComboBox(ranks);
+        rank.setPromptText("Select A Rank");
+
+        lreason = new Text("Reason Of The Report");
+        reason = new ComboBox(rsn);
+        reason.setPromptText("Reason Of The Report");
+
+        lproof = new Text("Evidence");
+        proof = new TextArea();
+        proof.setPrefSize(15, 15);
+
+        lperm = new Text("Do you give the staff permissions \r\n to share your evidence?");
+        sharePerm = new ComboBox(perms);
+        sharePerm.setPromptText("Yes/No");
+
+        vbox.getChildren().addAll(lname, name, lrank, rank, lreason, reason, lproof, proof, lperm, sharePerm);
         return vbox;
     }
-
-    private TextArea textArea(){
+    //center
+    private TextArea textArea() {
         textArea = new TextArea();
-        textArea.setPrefWidth(300);
+        textArea.setPrefWidth(240);
         textArea.setEditable(false);
         return textArea;
     }
