@@ -7,7 +7,7 @@ public class Alerts {
     public static Alert resultAlert(){
         Alert empty = new Alert(Alert.AlertType.WARNING);
         empty.setTitle("Report Box Error!");
-        empty.setContentText("Fill the entire report before attempting \r\n to copy it!");
+        empty.setContentText("Fill the entire report before attempting to copy it!");
         empty.setHeaderText(null);
         empty.show();
 
@@ -22,6 +22,16 @@ public class Alerts {
         sAlert.show();
 
         return sAlert;
+    }
+
+    public static Alert commentAlert(){
+        Alert cAlert = new Alert(Alert.AlertType.WARNING);
+        cAlert.setContentText("Don't forget to enter a comment!");
+        cAlert.setHeaderText("No comment found!");
+        cAlert.setTitle("Comment Alert");
+        cAlert.show();
+
+        return cAlert;
     }
 
     //complete other alerts.

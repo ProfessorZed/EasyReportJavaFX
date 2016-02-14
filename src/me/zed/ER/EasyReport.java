@@ -6,9 +6,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 public class EasyReport extends Application {
 
+
     ObservableList<String> ranks = FXCollections.observableArrayList("Multiple Ranks/Offenders",
             "Default",
             "VIP",
@@ -45,6 +47,8 @@ public class EasyReport extends Application {
             "Inappropriate Content",
             "Abuse",
             "Spam");
+
+    String commentString;
     Clipboard clipboard = Clipboard.getSystemClipboard();
     ClipboardContent content = new ClipboardContent();
     TextArea textArea;
@@ -104,6 +108,7 @@ public class EasyReport extends Application {
 
         return hbox;
     }
+
     //bottom
     private HBox addHBoxBtm() {
         HBox hbox = new HBox();
@@ -115,7 +120,7 @@ public class EasyReport extends Application {
         credits.setFont(Font.font("Sofia-Pro", FontWeight.NORMAL, 12));
 
         Button commentBtn = new Button("Comment");
-        commentBtn.setPrefSize(140,40);
+        commentBtn.setPrefSize(140, 40);
         commentBtn.setFont(Font.font("Sant-Serif", FontWeight.BOLD, 14));
         commentBtn.setAlignment(Pos.CENTER);
         commentBtn.setOnAction(event -> {
@@ -125,8 +130,8 @@ public class EasyReport extends Application {
             commentDia.setContentText("Enter your comment");
 
             Optional<String> comment = commentDia.showAndWait();
-            if(comment.isPresent()){
-                String commentString = comment.toString();
+            if (comment.isPresent()) {
+                commentString = comment.toString();
             }
         });
 
@@ -136,14 +141,23 @@ public class EasyReport extends Application {
         btncopy.setFont(Font.font("Sant-Serif", FontWeight.BOLD, 14));
         btncopy.setAlignment(Pos.CENTER);
         btncopy.setOnAction(e -> {
-            textArea.setText(Result.result);
-            if (textArea.getText().isEmpty() || name.getText().isEmpty() || proof.getText().isEmpty()) {
+            if (name.getText().isEmpty() || proof.getText().isEmpty() || rank.getValue() == null || reason.getValue() == null ||
+                    sharePerm.getValue() == null) {
                 Alerts.resultAlert();
             } else {
+                textArea.setText(String.format(
+                        "[LIST][*][B][COLOR=#0000ff]In-Game Name: \r\n [/COLOR][/B]%s %s[/COLOR][/LIST]%n"
+                                + "[LIST][*][B][COLOR=#0000ff]Reason: \r\n [/COLOR][/B]%s[/LIST]%n"
+                                + "[LIST][*][B][COLOR=#0000ff]Evidence: \r\n [/COLOR][/B][URL]%s[/URL][/LIST]%n"
+                                + "[LIST][*][B][COLOR=#0000ff]Do you give us permission to share your proof: \r\n [/COLOR][/B]%s[/LIST]%n",
+                        getFormattedRank(rank.getValue().toString()), name.getText(), reason.getValue().toString() + " " +
+                                commentString, proof.getText(), sharePerm.getValue().toString()));
+
                 content.putString(textArea.getText());
                 clipboard.setContent(content);
                 Alerts.successfulAlert();
-                //fix this..
+                textArea.setText("");//fix this to show after clicking Done/OK in alert
+                //probably fixed, I hope : ye fixed
             }
         });
         hbox.getChildren().addAll(credits, btncopy, commentBtn);
@@ -247,12 +261,33 @@ public class EasyReport extends Application {
         vbox.getChildren().addAll(lname, name, lrank, rank, lreason, reason, lproof, proof, lperm, sharePerm);
         return vbox;
     }
+
     //center
     private TextArea textArea() {
         textArea = new TextArea();
         textArea.setPrefWidth(240);
         textArea.setEditable(false);
         return textArea;
+    }
+
+    //Thanks to LEGENDFF
+    private String getFormattedRank(String rank) {
+        switch (rank.toLowerCase()) {
+            case "default":
+                return "[COLOR=#AAAAAA][Default]";
+            case "vip":
+                return "[COLOR=#55FF55][VIP]";
+            case "vip+":
+                return "[COLOR=#55FF55][VIP[/COLOR][COLOR=#FFAA00]+[/COLOR][COLOR=#55FF55]]";
+            case "mvp":
+                return "[COLOR=#55FFFF][MVP]";
+            case "mvp+":
+                return "[COLOR=#55FFFF][MVP[/COLOR][COLOR=#FF5555]+[/COLOR][COLOR=#55FFFF]]";
+            case "mutliple ranks":
+                return "[COLOR=#404040]";
+            default:
+                return rank;
+        }
     }
 
 }
