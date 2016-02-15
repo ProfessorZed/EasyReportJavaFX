@@ -24,15 +24,6 @@ public class Alerts {
         return sAlert;
     }
 
-    public static Alert commentAlert(){
-        Alert cAlert = new Alert(Alert.AlertType.WARNING);
-        cAlert.setContentText("Don't forget to enter a comment!");
-        cAlert.setHeaderText("No comment found!");
-        cAlert.setTitle("Comment Alert");
-        cAlert.show();
-
-        return cAlert;
-    }
 
     //complete other alerts.
 }

@@ -32,7 +32,7 @@ import java.util.Optional;
 public class EasyReport extends Application {
 
 
-    ObservableList<String> ranks = FXCollections.observableArrayList("Multiple Ranks/Offenders",
+    ObservableList<String> ranks = FXCollections.observableArrayList("Multiple Ranks",
             "Default",
             "VIP",
             "VIP+",
@@ -156,7 +156,12 @@ public class EasyReport extends Application {
                 content.putString(textArea.getText());
                 clipboard.setContent(content);
                 Alerts.successfulAlert();
-                textArea.setText("");//fix this to show after clicking Done/OK in alert
+                name.setText("");
+                proof.setText("");
+                rank.setValue(null);
+                reason.setValue(null);
+                sharePerm.setValue(null);
+//                textArea.setText(""); fix this to show after clicking Done/OK in alert
                 //probably fixed, I hope : ye fixed
             }
         });
@@ -283,7 +288,7 @@ public class EasyReport extends Application {
                 return "[COLOR=#55FFFF][MVP]";
             case "mvp+":
                 return "[COLOR=#55FFFF][MVP[/COLOR][COLOR=#FF5555]+[/COLOR][COLOR=#55FFFF]]";
-            case "mutliple ranks":
+            case "multiple ranks":
                 return "[COLOR=#404040]";
             default:
                 return rank;
