@@ -1,0 +1,8 @@
+Easy Report update changelog: Counting from Version 3.0
+
+V3.0:
+- Windows, Linux & MAC OS compatibility thanks to JavaFX.
+- Complete rewrite to the application from scratch using JavaFX.
+- Site buttons are much prettier and easier to notice now.
+- Added a comment button instead of a text area.
+- Probably something else that I forgot.
